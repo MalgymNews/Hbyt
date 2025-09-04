@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <title>Testy – To, co Doležalová chce</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
+    h1, h2 { color: #c0392b; }
+    ul { list-style: none; padding: 0; }
+    li { background: white; margin: 10px 0; padding: 10px; border-left: 5px solid #e67e22; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; }
+    .obsah { margin-top: 10px; }
+    img { max-width: 100%; margin-top: 10px; display: none; }
+    .zobrazit { display: block; }
+    a { display: inline-block; margin-top: 20px; text-decoration: none; color: #555; }
+  </style>
+</head>
+<body>
+
+  <h1>Připravované testy</h1>
+
+  <h2>Nadcházející</h2>
+  <ul id="nadchazejici"></ul>
+
+  <h2>Minulé</h2>
+  <ul id="minule"></ul>
+
+  <a href="index.html">← Zpět na hlavní stránku</a>
+
+  <script>
+    const SERVER_URL = "http://127.0.0.1:5000"; // ← ZMĚŇ NA SVŮJ SERVER
+
+    async function nactiTesty() {
+      try {
+        const res = await fetch(`${SERVER_URL}/api/testy`);
+        const data = await res.json();
+
+        const nadchazejici = document.getElementById("nadchazejici");
+        const minule = document.getElementById("minule");
+
+        data.nadchazejici.forEach(t => {
+          const li = document.createElement("li");
+          li.innerHTML = `
+            <strong>${t.nazev}</strong><br>
+            Datum: ${t.datum}<br>
+            <div class="obsah">
+              <img src="${SERVER_URL}/images/${t.id}.jpg" alt="obrázek">
+            </div>
+          `;
+          li.addEventListener("click", function() {
+            const img = this.querySelector("img");
+            img.classList.toggle("zobrazit");
+          });
+          nadchazejici.appendChild(li);
+        });
+
+        data.minule.forEach(t => {
+          const li = document.createElement("li");
+          li.innerHTML = `
+            <strong>${t.nazev}</strong><br>
+            Datum: ${t.datum}<br>
+            <div class="obsah">
+              <img src="${SERVER_URL}/images/${t.id}.jpg" alt="obrázek">
+            </div>
+          `;
+          li.addEventListener("click", function() {
+            const img = this.querySelector("img");
+            img.classList.toggle("zobrazit");
+          });
+          minule.appendChild(li);
+        });
+
+      } catch (err) {
+        alert("Nepodařilo se načíst testy.");
+        console.error(err);
+      }
+    }
+
+    nactiTesty();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <title>Zápisky – To, co Doležalová chce</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
+    h1 { color: #c0392b; }
+    .zaznam {
+      background: white;
+      padding: 15px;
+      margin: 15px 0;
+      border-left: 5px solid #27ae60;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      cursor: pointer;
+    }
+    .zaznam h2 { margin-top: 0; }
+    .obsah { margin-top: 10px; }
+    img { max-width: 100%; margin-top: 10px; display: none; }
+    .zobrazit { display: block; }
+    a { display: inline-block; margin-top: 20px; text-decoration: none; color: #555; }
+  </style>
+</head>
+<body>
+
+  <h1>Zápisky z hodin</h1>
+  <div id="zapisky"></div>
+
+  <a href="index.html">← Zpět na hlavní stránku</a>
+
+  <script>
+    const SERVER_URL = "http://127.0.0.1:5000"; // ← ZMĚŇ NA SVŮJ SERVER
+
+    async function nactiZapisky() {
+      try {
+        const res = await fetch(`${SERVER_URL}/api/zapisky`);
+        const data = await res.json();
+
+        const container = document.getElementById("zapisky");
+        data.forEach(z => {
+          const div = document.createElement("div");
+          div.className = "zaznam";
+          div.innerHTML = `
+            <h2>${z.nazev} <small>(${z.datum})</small></h2>
+            <p>${z.obsah}</p>
+            <div class="obsah">
+              <img src="${SERVER_URL}/images/${z.id}.jpg" alt="obrázek">
+            </div>
+          `;
+          div.addEventListener("click", function() {
+            const img = this.querySelector("img");
+            img.classList.toggle("zobrazit");
+          });
+          container.appendChild(div);
+        });
+      } catch (err) {
+        alert("Nepodařilo se načíst zápisky.");
+        console.error(err);
+      }
+    }
+
+    nactiZapisky();
+  </script>
+
+</body>
+</html>
