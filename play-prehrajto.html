@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HBYT PLAY PŘEHRAJTO</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="player-style.css">
+<script src="config.js"></script>
+</head>
+<body>
+<button class="back-btn" onclick="window.location.href='index.html'">← Zpět</button>
+
+<div class="container">
+  <h1>HBYT PLAY PŘEHRAJTO</h1>
+  <label for="url">Odkaz na prehrajto.cz:</label>
+  <input id="url" type="url" placeholder="https://prehrajto.cz/...">
+  <button id="process">Získat video URL</button>
+  <input id="output" type="text" readonly placeholder="Zde se zobrazí přímý odkaz">
+  <button id="copy">Kopírovat</button>
+  <div id="status" class="status"></div>
+  <footer>© 2025 HBYT PLAY PŘEHRAJTO</footer>
+</div>
+
+<script>
+const API = HBYT_CONFIG.apiBase;
+const urlInput = document.getElementById("url");
+const out = document.getElementById("output");
+const stat = document.getElementById("status");
+
+document.getElementById("process").onclick = async () => {
+  stat.textContent = "⏳ Zpracovávám...";
+  stat.className = "status";
+  const url = urlInput.value.trim();
+  if (!url) { stat.textContent = "❗ Vlož odkaz."; stat.classList.add("err"); return; }
+
+  try {
+    const r = await fetch(`${API}/api/play-prehrajto`, {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ url })
+    });
+    const data = await r.json();
+    if (data.video_url) { out.value = data.video_url; stat.textContent = "✅ Video URL nalezeno."; stat.classList.add("ok"); }
+    else { stat.textContent = "❌ " + (data.error || "Video URL nebylo nalezeno."); stat.classList.add("err"); }
+  } catch (e) { stat.textContent = "⚠️ Nelze se připojit k API."; stat.classList.add("err"); }
+};
+
+document.getElementById("copy").onclick = () => {
+  if (!out.value) return;
+  navigator.clipboard.writeText(out.value);
+  stat.textContent = "📋 Zkopírováno do schránky!";
+  stat.className = "status ok";
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HBYT DOWNLOAD YOUTUBE</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="player-style.css">
+<script src="config.js"></script>
+</head>
+<body>
+<button class="back-btn" onclick="window.location.href='index.html'">← Zpět</button>
+
+<div class="container">
+  <h1>HBYT DOWNLOAD YOUTUBE</h1>
+  <label for="url">Odkaz na YouTube video:</label>
+  <input id="url" type="url" placeholder="https://www.youtube.com/watch?v=...">
+  <button id="process">Stáhnout video</button>
+  <div id="status" class="status"></div>
+  <footer>© 2025 HBYT DOWNLOAD YOUTUBE</footer>
+</div>
+
+<script>
+const API = HBYT_CONFIG.apiBase;
+const stat = document.getElementById("status");
+
+document.getElementById("process").onclick = async () => {
+  const url = document.getElementById("url").value.trim();
+  if (!url) { stat.textContent = "❗ Zadej odkaz na YouTube video."; stat.className = "status err"; return; }
+
+  stat.textContent = "⏳ Stahuji a připravuji video...";
+  stat.className = "status";
+
+  try {
+    const res = await fetch(`${API}/api/download-youtube`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url })
+    });
+    const data = await res.json();
+
+    if (data.download_url) {
+      stat.textContent = "✅ Video připraveno, stahování začne.";
+      stat.className = "status ok";
+      setTimeout(() => window.location.href = data.download_url, 1000);
+    } else {
+      stat.textContent = "❌ " + (data.error || "Chyba při stahování.");
+      stat.className = "status err";
+    }
+  } catch {
+    stat.textContent = "⚠️ Nelze se připojit k API.";
+    stat.className = "status err";
+  }
+};
+</script>
+</body>
+</html>
