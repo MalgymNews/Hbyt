@@ -1,3 +1,3 @@
 const HBYT_CONFIG = {
-  apiBase: "http://192.168.0.58:3468"
+  apiBase: "https://api.notchatgpt.cz:3468"
 };
